@@ -5,7 +5,7 @@ import {
   uniformInt,
   normal,
   binomial
-} from '../simulation/distributions.js'
+} from '../simulation/distribution.js'
 
 const router = Router()
 
