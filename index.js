@@ -6,11 +6,6 @@ import simulationRouter   from './src/routes/simulation.js'
 const app  = express()
 const PORT = process.env.PORT || 3001
 
-/* ── CORS ──────────────────────────────────────────────────────
-   Se permiten todos los orígenes para simplificar el despliegue.
-   El backend es una API pública de simulación sin datos sensibles,
-   por lo que abrir CORS es la práctica correcta para este caso.
-   ─────────────────────────────────────────────────────────────── */
 app.use(cors({
   origin:      '*',
   methods:     ['GET', 'POST', 'OPTIONS'],

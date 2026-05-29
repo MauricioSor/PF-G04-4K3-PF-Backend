@@ -22,13 +22,20 @@ router.post('/naveTierra', (req, res) => {
     const generador = createGenerator(method, Number(seed), params)
     const resultado = runSimulation(generador)
 
+    const { grilla, rng, ...rest } = resultado
     res.json({
       method,
       methodName:    generador.name,
       seed:          Number(seed),
       seedWasRandom: Boolean(seedWasRandom),
       params,
-      ...resultado,
+      ...rest,
+      grilla,
+      rng: {
+        ...rng,
+        type: generador.name,
+        seed: Number(seed),
+      },
     })
   } catch (err) {
     res.status(400).json({ error: err.message })
