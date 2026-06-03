@@ -31,10 +31,38 @@ export function binomialTabla(tabla, u) {
 
 /** Tabla para tipo de dispositivo */
 export const TABLA_TIPO_DISPOSITIVO = [
-  { value: 1, label: 'Servidor (Rack/Blade)',    cumulative: 0.25 },
+  { value: 1, label: 'Servidor (Rack/Blade)',      cumulative: 0.25 },
   { value: 2, label: 'Switch / Router Industrial', cumulative: 0.70 },
-  { value: 3, label: 'Equipo de Red Hogareño',   cumulative: 1.00 },
+  { value: 3, label: 'Equipo de Red Hogareño',     cumulative: 1.00 },
 ]
+
+/**
+ * Calcula el peso de un equipo según su tipo y el/los números aleatorios u.
+ * Fórmulas del DFD V2:
+ *   Tipo 1 (Servidor):      PS  = 15 + 15·u        → Uniform(15, 30)
+ *   Tipo 2 (Switch/Router): PR  = 3  +  5·u        → Uniform(3, 8)
+ *   Tipo 3 (Hogareño):      PER = Normal(0.5, 0.2) → se necesitan 2 u's (Box-Muller)
+ *
+ * @param {number} tipo - 1, 2 o 3
+ * @param {function} u  - función que devuelve el próximo número aleatorio en [0,1)
+ * @returns {{ peso: number, u1: number, u2: number|null }}
+ */
+export function pesoEquipo(tipo, u) {
+  const u1 = u()
+  if (tipo === 1) {
+    // PS = 15 + 15·u  → Uniform(15, 30)
+    return { peso: 15 + 15 * u1, u1, u2: null }
+  } else if (tipo === 2) {
+    // PR = 3 + 5·u  → Uniform(3, 8)
+    return { peso: 3 + 5 * u1, u1, u2: null }
+  } else {
+    // PER = Normal(0.5, 0.2)  → Box-Muller necesita 2 u's
+    const u2 = u()
+    const z = Math.sqrt(-2 * Math.log(Math.max(u1, 1e-10))) * Math.cos(2 * Math.PI * u2)
+    const peso = Math.max(0.01, 0.5 + 0.2 * z)
+    return { peso, u1, u2 }
+  }
+}
 
 /** Tabla para destino del equipo */
 export const TABLA_DESTINO = [

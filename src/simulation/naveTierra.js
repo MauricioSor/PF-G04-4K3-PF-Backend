@@ -2,9 +2,9 @@
 import {
   exponential,
   uniformInt,
-  uniform,
   normal,
   binomialTabla,
+  pesoEquipo,
   TABLA_TIPO_DISPOSITIVO,
   TABLA_DESTINO,
   TABLA_EFICACIA,
@@ -96,19 +96,22 @@ export function runSimulation(generador) {
         TTR_dia += TR
         TTR     += TR
 
+        // El tipo se determina primero porque el peso depende del tipo (DFD V2)
         const uTipo = raw(); totalU++
         const tipo = binomialTabla(TABLA_TIPO_DISPOSITIVO, oneShot(uTipo))
         if (tipo === 1)      { CS_dia++; CS++ }
         else if (tipo === 2) { CR_dia++; CR++ }
         else                 { ER_dia++; ER++ }
 
-        const uPeso = raw(); totalU++
-        const P = uniform(0.5, 20, oneShot(uPeso))
+        // Peso según DFD V2: PS=15+15u (Srv), PR=3+5u (Router), PER=Normal(0.5,0.2) (Hog)
+        const { peso: P, u1: uPeso1, u2: uPeso2 } = pesoEquipo(tipo, raw)
+        totalU++  // u1 siempre se consume; u2 solo para tipo 3
+        if (uPeso2 !== null) totalU++
         PT_dia += P
         PT     += P
 
         const uTD = raw(); totalU++
-        const TD = uniform(3, 15, oneShot(uTD))
+        const TD = 3 + 9 * uTD    // TD = 3 + 9·u  → Uniforme(3, 12)  [DFD: TD=3+9u]
         TTD_dia += TD
         TTD     += TD
 
@@ -122,7 +125,7 @@ export function runSimulation(generador) {
         } else if (destino === 'ED') {
           ED_dia++; ED++
           uTDD = raw(); totalU++
-          tdd = uniform(5, 60, oneShot(uTDD))
+          tdd = 5 + 50 * uTDD    // TDD = 5 + 50·u  → Uniforme(5, 55)  [DFD: TDD=5+50u]
           TTDD_dia += tdd
           TTDD     += tdd
         } else {
@@ -147,8 +150,9 @@ export function runSimulation(generador) {
           equipoEnLote: e + 1,
           uTipo:        parseFloat(uTipo.toFixed(6)),
           tipoLabel:    TIPO_LABEL[tipo],
-          uPeso:        parseFloat(uPeso.toFixed(6)),
-          peso:         parseFloat(P.toFixed(2)),
+          uPeso:        parseFloat(uPeso1.toFixed(6)),
+          uPeso2:       uPeso2 !== null ? parseFloat(uPeso2.toFixed(6)) : null,
+          peso:         parseFloat(P.toFixed(4)),
           uTR1:         parseFloat(uTR1.toFixed(6)),
           uTR2:         parseFloat(uTR2.toFixed(6)),
           tr:           parseFloat(TR.toFixed(2)),

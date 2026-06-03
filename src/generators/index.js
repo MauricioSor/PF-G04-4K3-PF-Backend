@@ -1,15 +1,7 @@
-import { createCentralSquare }              from './centralSquare.js'
-import { createLehmer }                     from './lehmer.js'
-import { createMixedCongruential }          from './mixedCongruential.js'
-import { createMultiplicativeCongruential } from './multiplicativeCongruential.js'
-import { createAdditiveCongruential }       from './additiveCongruential.js'
+import { createMixedCongruential } from './mixedCongruential.js'
 
 export const GENERATOR_METHODS = {
-  centralSquare:               'Parte Central del Cuadrado',
-  lehmer:                      'Lehmer',
-  mixedCongruential:           'Congruencial Mixto',
-  multiplicativeCongruential:  'Congruencial Multiplicativo',
-  additiveCongruential:        'Congruencial Aditivo',
+  mixedCongruential: 'Congruencial Mixto',
 }
 
 function requireParams(params, keys, methodName) {
@@ -29,40 +21,20 @@ function requireParams(params, keys, methodName) {
 }
 
 /**
- * Crea un generador de números pseudoaleatorios.
+ * Crea un generador de números pseudoaleatorios (Congruencial Mixto).
  *
- * @param {string} method   - Clave del método (ver GENERATOR_METHODS)
+ * @param {string} method   - Debe ser 'mixedCongruential'
  * @param {number} seed     - Semilla inicial
- * @param {object} [params] - Parámetros del método (sin valores por defecto)
+ * @param {object} [params] - { a, c, m }
  * @returns {{ next: () => number, generate: (n: number) => number[], name: string }}
  */
 export function createGenerator(method, seed, params = {}) {
-  switch (method) {
-
-    case 'centralSquare':
-      // No requiere parámetros adicionales; la semilla actúa como valor inicial
-      return createCentralSquare(seed)
-
-    case 'lehmer':
-      requireParams(params, ['a', 'm'], 'Lehmer')
-      return createLehmer(seed, Number(params.a), Number(params.m))
-
-    case 'mixedCongruential':
-      requireParams(params, ['a', 'c', 'm'], 'Congruencial Mixto')
-      return createMixedCongruential(seed, Number(params.a), Number(params.c), Number(params.m))
-
-    case 'multiplicativeCongruential':
-      requireParams(params, ['a', 'm'], 'Congruencial Multiplicativo')
-      return createMultiplicativeCongruential(seed, Number(params.a), Number(params.m))
-
-    case 'additiveCongruential':
-      requireParams(params, ['k', 'm'], 'Congruencial Aditivo')
-      return createAdditiveCongruential(seed, Number(params.k), Number(params.m))
-
-    default:
-      throw new Error(
-        `Método de generador desconocido: "${method}". ` +
-        `Opciones válidas: ${Object.keys(GENERATOR_METHODS).join(', ')}`
-      )
+  if (method !== 'mixedCongruential') {
+    throw new Error(
+      `Método desconocido: "${method}". El único método disponible es: mixedCongruential`
+    )
   }
+
+  requireParams(params, ['a', 'c', 'm'], 'Congruencial Mixto')
+  return createMixedCongruential(seed, Number(params.a), Number(params.c), Number(params.m))
 }
