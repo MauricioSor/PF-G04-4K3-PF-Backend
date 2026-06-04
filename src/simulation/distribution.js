@@ -56,7 +56,7 @@ export function pesoEquipo(tipo, u) {
     // PR = 3 + 5·u  → Uniform(3, 8)
     return { peso: 3 + 5 * u1, u1, u2: null }
   } else {
-    // PER = Normal(0.5, 0.2)  → Box-Muller necesita 2 u's
+    // PER = Normal(0.5, 0.2)  
     const u2 = u()
     const z = Math.sqrt(-2 * Math.log(Math.max(u1, 1e-10))) * Math.cos(2 * Math.PI * u2)
     const peso = Math.max(0.01, 0.5 + 0.2 * z)
