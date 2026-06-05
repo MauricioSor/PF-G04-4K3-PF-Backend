@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { createGenerator, GENERATOR_METHODS } from '../generators/index.js'
 import { runSimulation } from '../simulation/naveTierra.js'
+import { runPruebasEstadisticas } from '../generators/estadisticas.js'
 
 const router = Router()
 
@@ -23,6 +24,8 @@ router.post('/naveTierra', (req, res) => {
     const resultado = runSimulation(generador)
 
     const { grilla, rng, ...rest } = resultado
+    const pruebasEstadisticas = runPruebasEstadisticas(grilla)
+
     res.json({
       method,
       methodName:    generador.name,
@@ -36,6 +39,7 @@ router.post('/naveTierra', (req, res) => {
         type: generador.name,
         seed: Number(seed),
       },
+      pruebasEstadisticas,
     })
   } catch (err) {
     res.status(400).json({ error: err.message })
@@ -43,3 +47,4 @@ router.post('/naveTierra', (req, res) => {
 })
 
 export default router
+
