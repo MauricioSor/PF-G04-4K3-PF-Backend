@@ -4,16 +4,19 @@ import {
   uniform,
   uniformInt,
   normal,
-  binomial
+  binomialTabla,
 } from '../simulation/distribution.js'
 
 const router = Router()
+
+// Función u() simple usando Math.random para las rutas legadas
+const u = () => Math.random()
 
 // GET /api/distributions/exponential?mean=80
 router.get('/exponential', (req, res) => {
   const mean = parseFloat(req.query.mean)
   if (isNaN(mean)) return res.status(400).json({ error: 'Parámetro mean requerido' })
-  res.json({ result: exponential(mean) })
+  res.json({ result: exponential(mean, u) })
 })
 
 // GET /api/distributions/uniform?a=15&b=30
@@ -21,7 +24,7 @@ router.get('/uniform', (req, res) => {
   const a = parseFloat(req.query.a)
   const b = parseFloat(req.query.b)
   if (isNaN(a) || isNaN(b)) return res.status(400).json({ error: 'Parámetros a y b requeridos' })
-  res.json({ result: uniform(a, b) })
+  res.json({ result: uniform(a, b, u) })
 })
 
 // GET /api/distributions/uniform-int?a=5&b=15
@@ -29,23 +32,23 @@ router.get('/uniform-int', (req, res) => {
   const a = parseInt(req.query.a)
   const b = parseInt(req.query.b)
   if (isNaN(a) || isNaN(b)) return res.status(400).json({ error: 'Parámetros a y b requeridos' })
-  res.json({ result: uniformInt(a, b) })
+  res.json({ result: uniformInt(a, b, u) })
 })
 
 // GET /api/distributions/normal?mu=2&sigma=0.5
 router.get('/normal', (req, res) => {
-  const mu = parseFloat(req.query.mu)
+  const mu    = parseFloat(req.query.mu)
   const sigma = parseFloat(req.query.sigma)
   if (isNaN(mu) || isNaN(sigma)) return res.status(400).json({ error: 'Parámetros mu y sigma requeridos' })
-  res.json({ result: normal(mu, sigma) })
+  res.json({ result: normal(mu, sigma, u) })
 })
 
 // POST /api/distributions/binomial
-// Body: { "table": [{"value": "Servidor", "cumulative": 0.25}, ...], "u": 0.73 }
+// Body: { "table": [{"value": "Servidor", "cumulative": 0.25}, ...] }
 router.post('/binomial', (req, res) => {
-  const { table, u } = req.body
+  const { table } = req.body
   if (!table || !Array.isArray(table)) return res.status(400).json({ error: 'Tabla requerida' })
-  res.json({ result: binomial(table, u) })
+  res.json({ result: binomialTabla(table, u) })
 })
 
-export default router
+export default router
