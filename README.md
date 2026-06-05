@@ -14,7 +14,7 @@ API REST construida con **Express + Node.js** que expone el motor de simulación
 4. [Distribuciones implementadas](#4-distribuciones-implementadas)
 5. [Estructura del proyecto](#5-estructura-del-proyecto)
 6. [Instalación y ejecución](#6-instalación-y-ejecución)
-7. [Despliegue en Render](#7-despliegue-en-render)
+
 
 ---
 
@@ -331,23 +331,6 @@ curl -X POST http://localhost:3001/api/simulate/naveTierra \
     "params": { "a": 1664525, "c": 1013904223, "m": 4294967296 }
   }'
 ```
-
----
-
-## 7. Despliegue en Render
-
-| Campo | Valor |
-|-------|-------|
-| **Runtime** | Node |
-| **Build Command** | `npm install` |
-| **Start Command** | `npm start` |
-| **Variable de entorno** | `NODE_ENV=production` |
-
-El servidor usa `process.env.PORT` (asignado dinámicamente por Render) con fallback a `3001` para desarrollo local.
-
-**CORS**: configurado con `origin: '*'` (API pública sin datos sensibles). Si se necesita restringir, se puede agregar la variable `FRONTEND_URL` y ajustar la lógica en `index.js`.
-
-> **Nota sobre el plan Free de Render**: el servicio hiberna después de 15 minutos de inactividad. La primera petición puede tardar ~30 segundos en despertar el servicio.
 
 ---
 
