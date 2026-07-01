@@ -4,6 +4,24 @@ export function exponential(media, u) {
   return -media * Math.log(val)
 }
 
+/**
+ * Distribución de Poisson (Método de multiplicación)
+ * Devuelve la cantidad de eventos en base a una media (lambda).
+ */
+export function poisson(lambda, u) {
+  const limite = Math.exp(-lambda)
+  let p = 1
+  let x = 0
+  while (p > limite) {
+    p *= u()
+    if (p > limite) {
+      x++
+    }
+  }
+  return x
+}
+
+
 export function uniform(a, b, u) {
   return a + (b - a) * u()
 }

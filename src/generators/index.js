@@ -1,32 +1,20 @@
-import { createMixedCongruential } from './mixedCongruential.js'
+import { createMixedCongruential, DEFAULT_LCG_PARAMS } from './mixedCongruential.js'
 
 export const GENERATOR_METHODS = {
   mixedCongruential: 'Congruencial Mixto',
 }
 
-function requireParams(params, keys, methodName) {
-  const missing = []
-  for (const key of keys) {
-    const val = params[key]
-    if (val === undefined || val === null || isNaN(Number(val))) {
-      missing.push(key)
-    }
-  }
-  if (missing.length > 0) {
-    throw new Error(
-      `El método "${methodName}" requiere los parámetros: ${missing.join(', ')}. ` +
-      `Ninguno puede estar vacío o ser inválido.`
-    )
-  }
-}
-
 /**
  * Crea un generador de números pseudoaleatorios (Congruencial Mixto).
  *
+ * Los parámetros a, c y m son opcionales: si no se proveen (o el objeto params
+ * está vacío), se utilizan los valores recomendados de DEFAULT_LCG_PARAMS,
+ * que cumplen el Teorema de Hull-Dobell y garantizan período máximo.
+ *
  * @param {string} method   - Debe ser 'mixedCongruential'
- * @param {number} seed     - Semilla inicial
- * @param {object} [params] - { a, c, m }
- * @returns {{ next: () => number, generate: (n: number) => number[], name: string }}
+ * @param {number} seed     - Semilla inicial (0 ≤ seed < m)
+ * @param {object} [params] - { a?, c?, m? } — todos opcionales
+ * @returns {{ next: () => number, generate: (n: number) => number[], name: string, params: object }}
  */
 export function createGenerator(method, seed, params = {}) {
   if (method !== 'mixedCongruential') {
@@ -35,6 +23,11 @@ export function createGenerator(method, seed, params = {}) {
     )
   }
 
-  requireParams(params, ['a', 'c', 'm'], 'Congruencial Mixto')
-  return createMixedCongruential(seed, Number(params.a), Number(params.c), Number(params.m))
+  const a = params.a != null && !isNaN(Number(params.a)) ? Number(params.a) : DEFAULT_LCG_PARAMS.a
+  const c = params.c != null && !isNaN(Number(params.c)) ? Number(params.c) : DEFAULT_LCG_PARAMS.c
+  const m = params.m != null && !isNaN(Number(params.m)) ? Number(params.m) : DEFAULT_LCG_PARAMS.m
+
+  return createMixedCongruential(seed, a, c, m)
 }
+
+export { DEFAULT_LCG_PARAMS }
